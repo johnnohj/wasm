@@ -56,6 +56,33 @@ const CP_CTX_NEW  = -2;
 const AUTO_RELOAD_MSG =
     'Auto-reload is on. Simply save files over USB to run them or enter REPL to disable.\r\n';
 
+// Default board definition — matches boards/wasm_browser/definition.json.
+// Used when no boardDefinition option is provided to CircuitPython.create().
+// Can be overridden at boot for board switching (Feather, CPX, etc.).
+const DEFAULT_BOARD_DEFINITION = {
+    boardName: 'wasm_browser',
+    pins: [
+        { name: 'D0',  id: 0 },  { name: 'D1',  id: 1 },
+        { name: 'D2',  id: 2 },  { name: 'D3',  id: 3 },
+        { name: 'D4',  id: 4 },  { name: 'D5',  id: 5 },
+        { name: 'D6',  id: 6 },  { name: 'D7',  id: 7 },
+        { name: 'D8',  id: 8 },  { name: 'D9',  id: 9 },
+        { name: 'D10', id: 10 }, { name: 'D11', id: 11 },
+        { name: 'D12', id: 12 },
+        { name: 'D13', id: 13, aliases: ['LED'] },
+        { name: 'A0',  id: 14 }, { name: 'A1',  id: 15 },
+        { name: 'A2',  id: 16 }, { name: 'A3',  id: 17 },
+        { name: 'A4',  id: 18, aliases: ['SDA'] },
+        { name: 'A5',  id: 19, aliases: ['SCL'] },
+        { name: 'NEOPIXEL', id: 20 },
+        { name: 'BUTTON_A', id: 21, aliases: ['BUTTON'] },
+        { name: 'BUTTON_B', id: 22 },
+        { name: 'MOSI', id: 11 }, { name: 'MISO', id: 12 },
+        { name: 'SCK',  id: 13 },
+        { name: 'TX',   id: 1 },  { name: 'RX',   id: 0 },
+    ],
+};
+
 export class CircuitPython {
     /**
      * Create and boot a CircuitPython board.
@@ -609,9 +636,60 @@ export class CircuitPython {
         const bytes = await env.loadFile(options.wasmUrl);
         const module = await WebAssembly.compile(bytes);
 
-        // Merge WASI + jsffi imports
+        // Merge WASI + jsffi + port imports
         const imports = this._wasi.getImports();
         imports.jsffi = getJsffiImports();
+
+        // Port imports — C calls these to request scheduling.
+        // requestFrame(hint_ms): C tells JS when to call wasm_frame() next.
+        //   0 = ASAP, 1..N = delay ms, 0xFFFFFFFF = idle (don't schedule)
+        imports.port = {
+            requestFrame: (hintMs) => {
+                // Cancel any existing schedule
+                if (this._raf) {
+                    env.cancelFrame(this._raf);
+                    this._raf = null;
+                }
+                if (this._cDrivenTimer) {
+                    clearTimeout(this._cDrivenTimer);
+                    this._cDrivenTimer = null;
+                }
+
+                if (hintMs === 0xFFFFFFFF) {
+                    // Fully idle — don't schedule. _kick() restarts on event.
+                    return;
+                }
+                if (hintMs === 0) {
+                    // ASAP — use rAF for vsync
+                    this._raf = env.requestFrame(() => this._loop());
+                } else {
+                    // Delayed — use setTimeout
+                    this._cDrivenTimer = setTimeout(() => {
+                        this._cDrivenTimer = null;
+                        if (!this._destroyed) {
+                            this._raf = env.requestFrame(() => this._loop());
+                        }
+                    }, hintMs);
+                }
+            },
+
+            // ── Synchronous data callouts ──
+            // Common-hal calls these via WASM imports. JS runs
+            // synchronously, returns a value, C continues.
+
+            getCpuTemperature: () => {
+                // Simulated: 25°C ± 2°C noise
+                return 25000 + ((Math.random() * 4000 - 2000) | 0);
+            },
+
+            getCpuVoltage: () => {
+                return 3300;  // 3.3V
+            },
+
+            getMonotonicMs: () => {
+                return performance.now() | 0;
+            },
+        };
 
         const instance = await WebAssembly.instantiate(module, imports);
         this._wasi.setInstance(instance);
@@ -642,6 +720,21 @@ export class CircuitPython {
         // Initialize the supervisor (core init only — no auto-lifecycle).
         // JS orchestrates boot.py → code.py → REPL via runBoardLifecycle().
         this._exports.cp_init();
+
+        // Apply custom board definition if provided.  The C default
+        // (compiled into board_pins.c) is used when no definition is given.
+        if (options.boardDefinition) {
+            this._applyBoardDefinition(options.boardDefinition);
+        }
+
+        // Enable C-driven frame loop: C calls port.requestFrame() at the
+        // end of wasm_frame() to tell JS when to schedule the next frame.
+        // This replaces JS-side _scheduleNext logic with C-side decisions.
+        this._cDriven = true;
+        this._cDrivenTimer = null;
+        if (this._exports.cp_set_c_driven_loop) {
+            this._exports.cp_set_c_driven_loop(1);
+        }
 
         // Display (browser only)
         this._display = options.canvas
@@ -790,6 +883,52 @@ export class CircuitPython {
         if (options.autoLifecycle !== false) {
             this.runBoardLifecycle();
         }
+    }
+
+    /**
+     * Populate the board module dict from a definition.json object.
+     * JS parses the JSON; C provides board_add_pin(name_len, gpio_id).
+     *
+     * If no definition is provided, loads the built-in default from
+     * /boards/wasm_browser/definition.json via MEMFS.
+     */
+    _applyBoardDefinition(def) {
+        const e = this._exports;
+        if (!e.board_reset || !e.board_add_pin || !e.board_finalize) {
+            return;  // CIRCUITPY_MUTABLE_BOARD not enabled
+        }
+
+        if (!def || !def.pins) return;
+
+        // Reset board dict to standard items only
+        e.board_reset();
+
+        // Write each pin name into the shared input buffer, then call board_add_pin
+        const bufAddr = e.cp_input_buf_addr();
+        const mem = new Uint8Array(e.memory.buffer);
+        const enc = new TextEncoder();
+
+        for (const pin of def.pins) {
+            // Add primary name
+            const nameBytes = enc.encode(pin.name);
+            mem.set(nameBytes, bufAddr);
+            e.board_add_pin(nameBytes.length, pin.id);
+
+            // Add aliases (LED, SDA, SCL, etc.)
+            if (pin.aliases) {
+                for (const alias of pin.aliases) {
+                    const aliasBytes = enc.encode(alias);
+                    mem.set(aliasBytes, bufAddr);
+                    e.board_add_pin(aliasBytes.length, pin.id);
+                }
+            }
+        }
+
+        // Add bus constructors and display
+        e.board_finalize();
+
+        // Store definition for hardware adapter / SVG rendering
+        this._boardDefinition = def;
     }
 
     /** Print "code.py last edited: ..." line via cp_print. */
@@ -974,6 +1113,10 @@ export class CircuitPython {
      * JS adds its own knowledge (hidden tab, display exists) to decide.
      */
     _scheduleNext(port, sup, vm) {
+        // In C-driven mode, wasm_frame() already called port.requestFrame()
+        // with the right hint. JS doesn't need to schedule.
+        if (this._cDriven) return;
+
         const hidden = typeof document !== 'undefined' && document.hidden;
         const hasDisplay = !!this._display;
         const hasIO = !!(this._target && this._target.connected);
