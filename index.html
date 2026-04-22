@@ -384,6 +384,9 @@ function startCode() {
     if (!board) return;
     board.stop();
     $text.textContent = '';
+    // Clear displayio terminal + print separator (like real CP boards)
+    clearDisplay();
+    board._readline.termWrite('Running code.py ...\r\n\r\n');
     // Write editor → MEMFS (persists to IDB automatically)
     const enc = new TextEncoder();
     board._wasi.writeFile('/CIRCUITPY/code.py', enc.encode($editor.value));
@@ -396,7 +399,10 @@ function startRepl() {
     if (!board) return;
     board.stop();
     $text.textContent = '';
-    // Show REPL prompt on the displayio terminal
+    // Clear displayio terminal, newline, then prompt (matches _enterRepl)
+    clearDisplay();
+    board._readline._waitingForResult = false;
+    board._readline.termWrite('\r\n');
     board._readline.showPrompt();
     setMode('repl');
     setView('display');
@@ -406,7 +412,21 @@ function startRepl() {
 function stopAll() {
     if (!board) return;
     board.stop();
+    clearDisplay();
+    resetBoardVisuals();
     setMode('ready');
+}
+
+/** Reset SVG pin circles and neopixels to default (off) state. */
+function resetBoardVisuals() {
+    for (const c of $svg.querySelectorAll('.pin-circle')) {
+        c.setAttribute('fill', '#333');
+        c.setAttribute('stroke', '#555');
+    }
+    for (const led of $svg.querySelectorAll('.neopixel-led')) {
+        led.setAttribute('fill', '#111');
+        led.setAttribute('stroke', '#333');
+    }
 }
 
 // ── Event wiring ──
@@ -435,7 +455,16 @@ function setView(view) {
 }
 document.getElementById('btn-view-display').addEventListener('click', () => setView('display'));
 document.getElementById('btn-view-text').addEventListener('click', () => setView('text'));
-document.getElementById('btn-clear').addEventListener('click', () => { $text.textContent = ''; });
+document.getElementById('btn-clear').addEventListener('click', () => {
+    $text.textContent = '';
+    clearDisplay();
+});
+
+/** Send ESC[2J (clear screen) to the displayio terminal via cp_print. */
+function clearDisplay() {
+    if (!board?._readline) return;
+    board._readline.termWrite('\x1b[2J');
+}
 
 // ── Board buttons ──
 function setupButton(id, pin) {
