@@ -1,0 +1,13 @@
+{
+  "componentName": "dimmable_led",
+  "displayName": "Dimmable LED",
+  "vendor": "Generic",
+  "type": "analog",
+  "productURL": "https://www.adafruit.com/product/301",
+  "documentationURL": "https://learn.adafruit.com/all-about-leds",
+  "visual": {
+    "icon": "slider",
+    "color": "#3498db",
+    "widget": "slider"
+  }
+}

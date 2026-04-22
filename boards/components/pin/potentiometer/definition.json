@@ -1,0 +1,13 @@
+{
+  "componentName": "potentiometer",
+  "displayName": "Potentiometer",
+  "vendor": "Generic",
+  "type": "analog",
+  "productURL": "https://www.adafruit.com/product/356",
+  "documentationURL": "https://learn.adafruit.com/make-it-change-potentiometers",
+  "visual": {
+    "icon": "slider",
+    "color": "#3498db",
+    "widget": "slider"
+  }
+}

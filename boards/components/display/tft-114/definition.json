@@ -1,0 +1,13 @@
+{
+  "componentName": "tft-114",
+  "displayName": "1.14\" TFT LCD Display",
+  "vendor": "Adafruit",
+  "type": "display",
+  "productURL": "https://www.adafruit.com/product/4383",
+  "documentationURL": "https://learn.adafruit.com/adafruit-1-14-240x135-color-tft-breakout",
+  "visual": {
+    "icon": "display",
+    "color": "#2ecc71",
+    "widget": "text"
+  }
+}

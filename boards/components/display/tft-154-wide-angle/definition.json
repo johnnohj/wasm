@@ -1,0 +1,13 @@
+{
+  "componentName": "tft-154-wide-angle",
+  "displayName": "1.54\" TFT LCD Display",
+  "vendor": "Adafruit",
+  "type": "display",
+  "productURL": "https://www.adafruit.com/product/3787",
+  "documentationURL": "https://learn.adafruit.com/adafruit-1-3-and-1-54-240-x-240-wide-angle-tft-lcd-displays",
+  "visual": {
+    "icon": "display",
+    "color": "#2ecc71",
+    "widget": "text"
+  }
+}

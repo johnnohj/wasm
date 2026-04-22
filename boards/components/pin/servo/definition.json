@@ -1,0 +1,13 @@
+{
+  "componentName": "servo",
+  "displayName": "Generic Servo",
+  "vendor": "Generic",
+  "type": "analog",
+  "productURL": "https://www.adafruit.com/product/169",
+  "documentationURL": "https://learn.adafruit.com/using-servos-with-circuitpython",
+  "visual": {
+    "icon": "slider",
+    "color": "#3498db",
+    "widget": "slider"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "componentName": "rgb_led",
+  "displayName": "RGB LED",
+  "vendor": "Generic",
+  "type": "analog",
+  "productURL": "https://www.adafruit.com/product/302",
+  "documentationURL": "https://learn.adafruit.com/adafruit-arduino-lesson-3-rgb-leds/overview",
+  "driver": {
+    "package": "adafruit_rgbled",
+    "repo": "https://github.com/adafruit/adafruit_circuitpython_rgbled",
+    "importName": "adafruit_rgbled"
+  },
+  "visual": {
+    "icon": "slider",
+    "color": "#3498db",
+    "widget": "slider"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "componentName": "analog_pin",
+  "displayName": "Analog Pin",
+  "vendor": "Generic",
+  "type": "analog",
+  "visual": {
+    "icon": "slider",
+    "color": "#3498db",
+    "widget": "slider"
+  }
+}

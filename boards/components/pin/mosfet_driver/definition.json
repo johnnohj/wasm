@@ -1,0 +1,13 @@
+{
+  "componentName": "mosfet_driver",
+  "displayName": "MOSFET Driver",
+  "vendor": "Adafruit",
+  "type": "digital",
+  "productURL": "https://www.adafruit.com/product/5648",
+  "documentationURL": "https://learn.adafruit.com/adafruit-mosfet-driver",
+  "visual": {
+    "icon": "toggle",
+    "color": "#2ecc71",
+    "widget": "toggle"
+  }
+}

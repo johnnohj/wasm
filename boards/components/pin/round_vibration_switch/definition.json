@@ -1,0 +1,12 @@
+{
+  "componentName": "round_vibration_switch",
+  "displayName": "Round Vibration Switch",
+  "vendor": "Generic",
+  "type": "digital",
+  "productURL": "https://www.adafruit.com/product/1766",
+  "visual": {
+    "icon": "toggle",
+    "color": "#2ecc71",
+    "widget": "toggle"
+  }
+}

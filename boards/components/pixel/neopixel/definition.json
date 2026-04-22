@@ -1,0 +1,13 @@
+{
+  "componentName": "neopixel",
+  "displayName": "NeoPixel",
+  "vendor": "Generic",
+  "type": "neopixel",
+  "productURL": "http://www.adafruit.com/category/168",
+  "documentationURL": "https://learn.adafruit.com/adafruit-neopixel-uberguide",
+  "visual": {
+    "icon": "led_strip",
+    "color": "#9b59b6",
+    "widget": "led_strip"
+  }
+}

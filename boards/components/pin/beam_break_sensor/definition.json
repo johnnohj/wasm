@@ -1,0 +1,13 @@
+{
+  "componentName": "beam_break_sensor",
+  "displayName": "Beam Sensor",
+  "vendor": "Generic",
+  "type": "digital",
+  "productURL": "https://www.adafruit.com/product/2168",
+  "documentationURL": "https://learn.adafruit.com/ir-breakbeam-sensors",
+  "visual": {
+    "icon": "toggle",
+    "color": "#2ecc71",
+    "widget": "toggle"
+  }
+}

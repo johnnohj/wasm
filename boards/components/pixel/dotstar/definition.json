@@ -1,0 +1,18 @@
+{
+  "componentName": "dotstar",
+  "displayName": "DotStar",
+  "vendor": "Generic",
+  "type": "neopixel",
+  "productURL": "https://www.adafruit.com/product/2343",
+  "documentationURL": "https://learn.adafruit.com/adafruit-dotstar-leds",
+  "driver": {
+    "package": "adafruit_dotstar",
+    "repo": "https://github.com/adafruit/adafruit_circuitpython_dotstar",
+    "importName": "adafruit_dotstar"
+  },
+  "visual": {
+    "icon": "led_strip",
+    "color": "#9b59b6",
+    "widget": "led_strip"
+  }
+}

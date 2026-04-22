@@ -1,0 +1,37 @@
+{
+  "componentName": "ds18b20_hi_temp_waterproof",
+  "displayName": "High Temp + Waterproof DS18B20",
+  "vendor": "Generic",
+  "type": "digital",
+  "productURL": "https://www.adafruit.com/product/642",
+  "documentationURL": "https://learn.adafruit.com/using-ds18b20-temperature-sensor-with-wippersnapper",
+  "sensors": [
+    {
+      "type": "ambient-temp",
+      "displayName": "Temperature Sensor (\u00b0C)",
+      "unit": "\u00b0C",
+      "range": {
+        "min": -40,
+        "max": 85
+      },
+      "defaultValue": 22,
+      "defaultPeriod": 0.9
+    },
+    {
+      "type": "ambient-temp-fahrenheit",
+      "displayName": "Temperature Sensor (\u00b0F)",
+      "unit": "\u00b0F",
+      "range": {
+        "min": -40,
+        "max": 185
+      },
+      "defaultValue": 72,
+      "defaultPeriod": 0.9
+    }
+  ],
+  "visual": {
+    "icon": "thermometer",
+    "color": "#e74c3c",
+    "widget": "slider"
+  }
+}

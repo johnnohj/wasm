@@ -1,0 +1,13 @@
+{
+  "componentName": "reed_switch",
+  "displayName": "Reed Switch",
+  "vendor": "Generic",
+  "type": "digital",
+  "productURL": "https://www.adafruit.com/product/375",
+  "documentationURL": "https://learn.adafruit.com/no-code-iot-door-alarm-with-wippersnapper",
+  "visual": {
+    "icon": "toggle",
+    "color": "#2ecc71",
+    "widget": "toggle"
+  }
+}

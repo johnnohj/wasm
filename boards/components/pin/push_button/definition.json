@@ -1,0 +1,13 @@
+{
+  "componentName": "push_button",
+  "displayName": "Push Button",
+  "vendor": "Generic",
+  "type": "digital",
+  "productURL": "https://www.adafruit.com/product/367",
+  "documentationURL": "https://learn.adafruit.com/adafruit-arduino-lesson-6-digital-inputs?view=all",
+  "visual": {
+    "icon": "toggle",
+    "color": "#2ecc71",
+    "widget": "toggle"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "componentName": "neorgb",
+  "displayName": "NeoRGB Stemma",
+  "vendor": "Adafruit",
+  "type": "neopixel",
+  "productURL": "https://www.adafruit.com/product/5888",
+  "documentationURL": "https://learn.adafruit.com/adafruit-neorgb-stemma",
+  "visual": {
+    "icon": "led_strip",
+    "color": "#9b59b6",
+    "widget": "led_strip"
+  }
+}

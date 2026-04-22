@@ -1,0 +1,13 @@
+{
+  "componentName": "light_sensor",
+  "displayName": "Light Sensor",
+  "vendor": "Generic",
+  "type": "analog",
+  "productURL": "https://www.adafruit.com/product/161",
+  "documentationURL": "https://learn.adafruit.com/photocells",
+  "visual": {
+    "icon": "slider",
+    "color": "#3498db",
+    "widget": "slider"
+  }
+}

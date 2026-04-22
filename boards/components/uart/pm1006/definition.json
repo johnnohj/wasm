@@ -1,0 +1,26 @@
+{
+  "componentName": "pm1006",
+  "displayName": "VINDRIKTNING (PM1006)",
+  "vendor": "IKEA",
+  "type": "uart",
+  "productURL": "https://www.ikea.com/us/en/p/vindriktning-air-quality-sensor-60515911/",
+  "documentationURL": "https://learn.adafruit.com/ikea-vindriktning-hack-with-qt-py-esp32-s3-and-adafruit-io",
+  "sensors": [
+    {
+      "type": "pm25-env",
+      "displayName": "PM2.5 Environmental",
+      "unit": "",
+      "range": {
+        "min": 0,
+        "max": 100
+      },
+      "defaultValue": 0,
+      "defaultPeriod": 0.9
+    }
+  ],
+  "visual": {
+    "icon": "chip",
+    "color": "#95a5a6",
+    "widget": "gauge"
+  }
+}

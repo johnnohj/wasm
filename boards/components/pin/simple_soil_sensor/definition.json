@@ -1,0 +1,12 @@
+{
+  "componentName": "simple_soil_sensor",
+  "displayName": "Simple Soil Sensor",
+  "vendor": "Adafruit",
+  "type": "analog",
+  "productURL": "https://www.adafruit.com/product/6362",
+  "visual": {
+    "icon": "slider",
+    "color": "#3498db",
+    "widget": "slider"
+  }
+}

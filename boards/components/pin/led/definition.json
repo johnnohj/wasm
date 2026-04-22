@@ -1,0 +1,13 @@
+{
+  "componentName": "led",
+  "displayName": "LED",
+  "vendor": "Generic",
+  "type": "digital",
+  "productURL": "https://www.adafruit.com/product/301",
+  "documentationURL": "https://learn.adafruit.com/all-about-leds",
+  "visual": {
+    "icon": "toggle",
+    "color": "#2ecc71",
+    "widget": "toggle"
+  }
+}

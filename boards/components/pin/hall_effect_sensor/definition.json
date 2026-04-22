@@ -1,0 +1,13 @@
+{
+  "componentName": "hall_effect_sensor",
+  "displayName": "Hall Effect Sensor",
+  "vendor": "Generic",
+  "type": "digital",
+  "productURL": "https://www.adafruit.com/product/158",
+  "documentationURL": "https://www.melexis.com/en/product/us5881/unipolar-hall-effect-switch-low-sensitivity",
+  "visual": {
+    "icon": "toggle",
+    "color": "#2ecc71",
+    "widget": "toggle"
+  }
+}

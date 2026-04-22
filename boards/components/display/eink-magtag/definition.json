@@ -1,0 +1,13 @@
+{
+  "componentName": "eink-magtag",
+  "displayName": "MagTag - 2.9\" E-Ink Display",
+  "vendor": "Adafruit",
+  "type": "display",
+  "productURL": "https://www.adafruit.com/product/4800",
+  "documentationURL": "https://learn.adafruit.com/adafruit-magtag",
+  "visual": {
+    "icon": "display",
+    "color": "#2ecc71",
+    "widget": "text"
+  }
+}

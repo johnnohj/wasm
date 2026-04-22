@@ -1,0 +1,13 @@
+{
+  "componentName": "piezo_buzzer",
+  "displayName": "Piezo Buzzer",
+  "vendor": "Generic",
+  "type": "analog",
+  "productURL": "https://www.adafruit.com/product/160",
+  "documentationURL": "https://learn.adafruit.com/using-piezo-buzzers-with-wippersnapper",
+  "visual": {
+    "icon": "slider",
+    "color": "#3498db",
+    "widget": "slider"
+  }
+}

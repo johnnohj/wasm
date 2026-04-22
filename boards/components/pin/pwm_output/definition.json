@@ -1,0 +1,13 @@
+{
+  "componentName": "pwm_output",
+  "displayName": "PWM Output",
+  "vendor": "Generic",
+  "type": "analog",
+  "productURL": "https://www.adafruit.com/product/301",
+  "documentationURL": "https://learn.adafruit.com/improve-brushed-dc-motor-performance/pwm-and-brushed-dc-motors",
+  "visual": {
+    "icon": "slider",
+    "color": "#3498db",
+    "widget": "slider"
+  }
+}

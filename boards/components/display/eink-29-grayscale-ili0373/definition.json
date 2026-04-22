@@ -1,0 +1,13 @@
+{
+  "componentName": "eink-29-grayscale-ili0373",
+  "displayName": "2.9\" Grayscale eInk (ILI0373)",
+  "vendor": "Adafruit",
+  "type": "display",
+  "productURL": "https://www.adafruit.com/product/4777",
+  "documentationURL": "https://learn.adafruit.com/adafruit-2-9-eink-display-breakouts-and-featherwings",
+  "visual": {
+    "icon": "display",
+    "color": "#2ecc71",
+    "widget": "text"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "componentName": "power_switch_tail",
+  "displayName": "Power Switch",
+  "vendor": "Adafruit",
+  "type": "digital",
+  "productURL": "https://www.adafruit.com/product/2935",
+  "documentationURL": "https://cdn-shop.adafruit.com/product-files/2935/P2935B%20datasheet.pdf",
+  "visual": {
+    "icon": "toggle",
+    "color": "#2ecc71",
+    "widget": "toggle"
+  }
+}

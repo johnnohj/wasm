@@ -1,0 +1,13 @@
+{
+  "componentName": "non_latching_relay",
+  "displayName": "Relay",
+  "vendor": "Generic",
+  "type": "digital",
+  "productURL": "https://www.adafruit.com/product/4409",
+  "documentationURL": "https://learn.adafruit.com/adafruit-stemma-non-latching-mini-relay",
+  "visual": {
+    "icon": "toggle",
+    "color": "#2ecc71",
+    "widget": "toggle"
+  }
+}

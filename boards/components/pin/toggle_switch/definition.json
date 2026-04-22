@@ -1,0 +1,13 @@
+{
+  "componentName": "toggle_switch",
+  "displayName": "Toggle Switch",
+  "vendor": "Generic",
+  "type": "digital",
+  "productURL": "https://www.adafruit.com/product/3221",
+  "documentationURL": "https://learn.adafruit.com/make-it-switch",
+  "visual": {
+    "icon": "toggle",
+    "color": "#2ecc71",
+    "widget": "toggle"
+  }
+}
