@@ -92,17 +92,33 @@ export class WasiMemfs {
         }
     }
 
-    // Read a file's content
+    // Read a file's content.  For live-view paths (/hal/*), this returns
+    // a fresh Uint8Array slice of WASM linear memory — same bytes C sees.
     readFile(path) {
+        const lv = this._liveViews?.get(path);
+        if (lv) {
+            // Return a fresh view — buffer may have been detached by grow.
+            return new Uint8Array(lv.memory.buffer, lv.ptr, lv.size);
+        }
         return this.files.get(path) || null;
     }
 
-    // Write hardware state from JS into memfs (for reads by C common-hal).
-    // Input changes (button press, analog slider) should go through the
-    // semihosting event ring (submitHwChange) instead — that route
-    // preserves individual events and lets C set dirty flags + latch.
-    // This method is for bulk/setup writes (I2C device seeding, test data).
+    // Register a live view: readFile(path) returns bytes directly from
+    // WASM linear memory.  Writes to the returned array modify C state.
+    registerLiveView(path, memory, ptr, size) {
+        if (!this._liveViews) this._liveViews = new Map();
+        this._liveViews.set(path, { memory, ptr, size });
+    }
+
+    // Write hardware state from JS into memfs.
+    // For live-view paths, this modifies WASM linear memory directly.
     updateHardwareState(path, data) {
+        const lv = this._liveViews?.get(path);
+        if (lv) {
+            new Uint8Array(lv.memory.buffer, lv.ptr, lv.size).set(
+                new Uint8Array(data).subarray(0, lv.size));
+            return;
+        }
         this.files.set(path, new Uint8Array(data));
     }
 
