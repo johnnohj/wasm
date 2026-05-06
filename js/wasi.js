@@ -50,7 +50,7 @@ export class WasiMemfs {
 
         // File descriptor table
         this.fds = new Map();
-        this.nextFd = 4; // 0=stdin, 1=stdout, 2=stderr, 3=root preopen
+        this.nextFd = 5; // 0=stdin, 1=stdout, 2=stderr, 3=root preopen, 4=protocol
 
         // fd 3 = preopened root "/"
         this.fds.set(3, { type: 'dir', path: '/' });
@@ -58,6 +58,7 @@ export class WasiMemfs {
         // Callbacks
         this.onStdout = options.onStdout || null;
         this.onStderr = options.onStderr || null;
+        this.onProtocol = options.onProtocol || null;
         this.onHardwareWrite = options.onHardwareWrite || null;
         this.onHardwareRead = options.onHardwareRead || null;
         this.onHardwareCommand = options.onHardwareCommand || null;
@@ -170,6 +171,13 @@ export class WasiMemfs {
                         const text = self._decoder.decode(data);
                         if (self.onStderr) self.onStderr(text);
                         else console.error(text);
+                        self._view().setUint32(nwritten, data.length, true);
+                        return ERRNO.SUCCESS;
+                    }
+                    if (fd === 4) {
+                        // Protocol channel — WS protocol messages as JSON lines
+                        const text = self._decoder.decode(data);
+                        if (self.onProtocol) self.onProtocol(text);
                         self._view().setUint32(nwritten, data.length, true);
                         return ERRNO.SUCCESS;
                     }
@@ -451,7 +459,56 @@ export class WasiMemfs {
                 },
 
                 sched_yield() { return ERRNO.SUCCESS; },
-                poll_oneoff() { return ERRNO.SUCCESS; },
+                poll_oneoff(in_ptr, out_ptr, nsubscriptions, nevents_ptr) {
+                    const view = self._view();
+                    const now_ns = BigInt(Math.floor(performance.now() * 1e6));
+                    let nevents = 0;
+
+                    for (let i = 0; i < nsubscriptions; i++) {
+                        const base = in_ptr + i * 48;
+                        const userdata = view.getBigUint64(base, true);
+                        const tag = view.getUint8(base + 8);
+                        const out = out_ptr + nevents * 32;
+
+                        if (tag === 0) {
+                            // Clock subscription
+                            const clockid = view.getUint32(base + 16, true);
+                            const timeout = view.getBigUint64(base + 24, true);
+                            const flags = view.getUint16(base + 40, true);
+
+                            let deadline;
+                            if (flags & 1) {
+                                // Absolute — compare directly
+                                deadline = timeout;
+                            } else {
+                                // Relative — deadline = now + timeout
+                                deadline = now_ns + timeout;
+                            }
+
+                            // On main thread: always report ready (can't block)
+                            // On Worker with SAB: could Atomics.wait here
+                            view.setBigUint64(out, userdata, true);
+                            view.setUint16(out + 8, 0, true); // no error
+                            view.setUint8(out + 10, 0);       // type = clock
+                            nevents++;
+                        } else if (tag === 1 || tag === 2) {
+                            // fd_read or fd_write subscription
+                            const fd = view.getUint32(base + 16, true);
+                            const entry = self.fds.get(fd);
+
+                            // Report ready — non-blocking
+                            view.setBigUint64(out, userdata, true);
+                            view.setUint16(out + 8, entry ? 0 : ERRNO.BADF, true);
+                            view.setUint8(out + 10, tag);
+                            view.setBigUint64(out + 16, BigInt(0), true); // nbytes
+                            view.setUint16(out + 24, 0, true); // flags
+                            nevents++;
+                        }
+                    }
+
+                    view.setUint32(nevents_ptr, nevents, true);
+                    return ERRNO.SUCCESS;
+                },
                 path_remove_directory() { return ERRNO.NOSYS; },
                 path_rename() { return ERRNO.NOSYS; },
                 path_unlink_file(dirfd, path_ptr, path_len) {
